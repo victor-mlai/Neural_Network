@@ -1,6 +1,4 @@
 #include "Network.h"
-#include <time.h>
-
 
 Network::Network()
 {
@@ -17,9 +15,6 @@ The biases and weights in the Network object are all initialized randomly
 */
 Network::Network(const vector<int>& topo) : topo(topo)
 {
-	//srand((unsigned int)time(NULL));
-	srand(42);
-
 	layers.resize(topo.size());
 	for (int i = 1; i < topo.size(); i++) {
 		layers[i].resize(topo[i]);
@@ -61,8 +56,9 @@ void Network::train(vector<float> in, vector<float> out)
 		for (int i = layers.size() - 2; i > 0; i--) {
 			Layer& currLayer = layers[i];
 			Layer& nextLayer = layers[i + 1];
+			int n_index = 0;	// neuron's index
 			for (Neuron* n : currLayer) {
-				n->calcHiddenGradient(nextLayer, i);
+				n->calcHiddenGradient(nextLayer, n_index++);
 			}
 		}
 
@@ -80,9 +76,11 @@ vector<float> Network::getResults(vector<float> in)
 {
 	vector<float> out(in);
 
+	printf("Input activations:\n");
 	Layer& inputLayer = layers[0];
 	for (int j = 0; j < topo[0]; j++) {
 		inputLayer[j]->setActivation(in[j]);
+		printf("%1.2f", inputLayer[j]->getActivation());
 	}
 
 	for (int i = 1; i < topo.size(); i++) {	// for each Layer (except input layer)

@@ -1,9 +1,10 @@
 #include "Neuron.h"
 #include <cmath> // in sigmoid function: used exp(x) <=> e^x
 #include <cassert>	// in dot function: used assert()
+#include <time.h>
 
-float Neuron::eta = 0.02f;
-float Neuron::alpha = 0.5f;
+const float Neuron::eta   = 0.2f;	// learning rate
+const float Neuron::alpha = 0.6f;	// momentum constant
 
 Neuron::Neuron()
 {
@@ -11,12 +12,15 @@ Neuron::Neuron()
 
 Neuron::Neuron(int nr_inputs)
 {
+	srand((unsigned int)time(NULL));
+	//srand(42);
+
 	// initializing bias and weights randomly
-	bias = rand() % 20 - 10;
+	bias = rand() / (float)RAND_MAX * 3.0f - 1.5f;
 
 	weights.resize(nr_inputs);
 	for (int i = 0; i < nr_inputs; i++) {
-		weights[i] = rand() % 20 - 10;
+		weights[i] = rand() / (float)RAND_MAX * 3.0f - 1.5f;
 	}
 
 	deltaBias = 0.0f;
@@ -29,7 +33,8 @@ Neuron::~Neuron()
 
 float Neuron::feedFoward(vector<float>& ins)
 {
-	my_out = sigmoid(dot(ins, weights) + bias);	// save value for back propagation
+	z = dot(ins, weights) + bias;
+	my_out = sigmoid(z);	// save value for back propagation
 	return my_out;
 }
 
@@ -46,11 +51,11 @@ void Neuron::calcHiddenGradient(const vector<Neuron*>& nextLayer, int my_index)
 void Neuron::update(vector<Neuron*>& prevLayer)
 {
 	for (int i = 0; i < weights.size(); i++) {
-		deltaWeights[i] = deltaWeights[i] * alpha + eta * prevLayer[i]->my_out * my_gradient;
+		deltaWeights[i] = ALPHA * deltaWeights[i] + ETA * prevLayer[i]->my_out * my_gradient;
 		weights[i] += deltaWeights[i];
 	}
 
-	deltaBias = deltaBias * alpha + eta * my_gradient;
+	deltaBias = ALPHA * deltaBias + ETA * my_gradient;
 	bias += deltaBias;
 }
 

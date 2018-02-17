@@ -3,6 +3,7 @@
 #include <vector>
 using namespace std;
 
+
 class Neuron {
 public:
 	Neuron();
@@ -24,11 +25,15 @@ private:
 	vector<float> weights;
 	vector<float> deltaWeights;
 
-	float my_out;		// activation output
+	float my_out;		// activation output or sigmoid(z)
+	float z;			// 
 	float my_gradient;	// error gradient
 
-	static float eta;	// learning rate
-	static float alpha;	// momentum constant
+	static const float eta;		// learning rate
+	static const float alpha;	// momentum constant
+
+	#define ETA 0.2f	// learning rate
+	#define ALPHA 0.6f // momentum constant
 
 	// helper functions
 	static float dot(const vector<float>& v1, const vector<float>& v2);	// dot product
