@@ -80,28 +80,23 @@ vector<float> Network::getResults(vector<float> in)
 {
 	vector<float> out(in);
 
-	//printf("\n");
 	Layer& inputLayer = layers[0];
 	for (int j = 0; j < topo[0]; j++) {
 		inputLayer[j]->setActivation(in[j]);
-		//printf("%2.2f ", inputLayer[j]->getActivation());
 	}
-	//printf("\n--------------------------------------------\n");
 	for (int i = 1; i < topo.size(); i++) {	// for each Layer (except input layer)
-		//printf("Output activations: %d\n", i);
 		in = out;	// the input of this layer will be the output of the previous layer
 		out.resize(topo[i]);
 		int j = 0;
 		for (Neuron* n : layers[i]) {	// for each Neuron in the current layer
 			out[j++] = n->feedFoward(in);
-			//printf("%2.2f ", out[j-1]);
 		}
-		//printf("\n--------------------------------------------\n");
 	}
 
 	return out;
 }
 
+// Root Mean Square error
 float Network::RMS(vector<float> target, vector<float> actual) {
 	float rms = 0.0f;
 

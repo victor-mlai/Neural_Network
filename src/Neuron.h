@@ -3,7 +3,6 @@
 #include <vector>
 using namespace std;
 
-
 class Neuron {
 public:
 	Neuron();
@@ -26,7 +25,7 @@ private:
 	vector<float> deltaWeights;
 
 	float my_out;		// activation output = sigmoid(z)
-	float z;			// 
+	float z;			// input for sigmoid(z)
 	float my_gradient;	// error gradient
 
 	static const float eta;		// learning rate
