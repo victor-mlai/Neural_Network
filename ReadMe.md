@@ -6,14 +6,15 @@ in the main() create
 ```
 	-the Network( using a topology vector{each number represents the number of Neurons in each Layer} ) 
 	-write a series of inputs and their corresponding output
-#####(as an example I let some commented code for a function)
+	-(as an example I let some commented code for a function)
 	-and the number of iterations should be pretty high so set it right.
 ```
 
 ## Neural Network Algorithm
-It's composed from multiple Layers : an Input Layer, 0 or more Hidden Layers and an Output Layer
-each Layer has a vector of Neuron*
-each Neuron has a vector of input weights and a bias value ( exception: the Input Layer )
+```
+-It's composed from multiple Layers : an Input Layer, 0 or more Hidden Layers and an Output Layer
+-each Layer has a vector of Neuron*
+-each Neuron has a vector of input weights and a bias value ( exception: the Input Layer )
 
 l - layer index
 n - neuron index
@@ -45,7 +46,7 @@ deltaB = alpha * deltaB + eta * d[l]
 
 w[l] += deltaW
 b[l] += deltaB
-
+```
 ### Feed Foward
 It goes through every possible outcome and only chooses the best one, resulting in either a draw or a win for the AI player.
 
