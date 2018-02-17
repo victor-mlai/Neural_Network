@@ -68,12 +68,13 @@ b += deltaB
 ```
 
 ## To do:
-```
-	1. Optimize the algorithm even more ([Cross-Entropy](http://neuralnetworksanddeeplearning.com/chap3.html#the_cross-entropy_cost_function) and [Regularization](http://neuralnetworksanddeeplearning.com/chap3.html#regularization))
+
+* Optimize the algorithm even more ([Cross-Entropy](http://neuralnetworksanddeeplearning.com/chap3.html#the_cross-entropy_cost_function) and [Regularization](http://neuralnetworksanddeeplearning.com/chap3.html#regularization))
+
 	[Improving the way neural networks learn](http://neuralnetworksanddeeplearning.com/chap3.html)
-	2. Combine with the Genetic Algorithm to create a self driving car??? .. idk
-	3. Recognize images with cucumbers
-```
+* Combine with the Genetic Algorithm to create a self driving car??? .. idk
+* Recognize images with cucumbers
+
 
 ## References:
 the book I used:
