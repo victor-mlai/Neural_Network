@@ -32,7 +32,7 @@ a - each Neuron* has an activation output, and belongs to the interval (0, 1)
 
 Set the corresponding output activations a[1] for the input layer.
 
-For each layer l=2,3,…,L compute z[l] and a[l] for each Neuron
+For each layer l=2,3,â€¦,L compute z[l] and a[l] for each Neuron
 
 z = dot(a[l-1], w[l][n]) + b[l][n]		// dot product
 a = s(z)
@@ -48,7 +48,7 @@ s'(z) - the derivative of s(z)
 Compute the vector d[L], d - gradient
 d[L] = (y - a[L]) * s'(z[L])
 
-For each l=L-1,L-2,…,2 compute
+For each l=L-1,L-2,â€¦,2 compute
 d[l] = sumWGr(w[l+1], d[l+1]) * sigmoid'(z[l])
 sumWGr(w[l+1], d[l+1]) = w[l+1][0][n] * d[l+1][0] + w[l+1][1][n] * d[l+1][1] * ...  
 ```
