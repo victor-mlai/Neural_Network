@@ -1,5 +1,5 @@
 # Neural Network
-Learns the function using the input from the testing_data how to compute the output
+Learns using the input from the testing_data how to compute the output
 
 ## Using the program
 ```
