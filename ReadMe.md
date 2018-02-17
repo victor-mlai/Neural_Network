@@ -3,10 +3,9 @@ Learns the function using the input from the testing_data how to compute the out
 
 ## Using the program
 ```
-in the main() create 
-	-the Network( using a topology vector{each number represents the number of Neurons in each Layer} ) 
-	-write a series of inputs and their corresponding output
-		(as an example I let some commented code for a function)
+in the main()
+	-write a series of inputs and their corresponding output (as an example check the sum of 2 bits)
+	-create the Network ( using a topology vector{each number represents the number of Neurons in each Layer} ) 
 	-and the number of iterations should be pretty high so set it right.
 ```
 
@@ -27,7 +26,7 @@ w[l][n][j] - the weight that connects the jth Neuron from the previous Layer wit
 b[l][n] - Neuron's bias value
 ```
 
-### Feed Foward
+### Feed Forward
 ```
 a - each Neuron* has an activation output, and belongs to the interval (0, 1)
 
@@ -68,9 +67,9 @@ b += deltaB
 ## To do:
 ```
 	1. Optimize the algorithm even more (Cross-Entropy!!! and Regularization)
+	http://neuralnetworksanddeeplearning.com/chap3.html	(Improving the way neural networks learn)
 	2. Combine with the Genetic Algorithm to create a self driving car??? .. idk
 	3. Recognize images with cucumbers
-	4. Sa-i zic La Multi Ani!! lui Vlad
 ```
 
 ## References:

@@ -21,8 +21,6 @@ void printSol(vector<float> net_in, vector<float> net_out, vector<float> out) {
 }
 
 int main() {
-	Network net({ 2, 3, 2 });
-
 	// Training the net
 	// SUM - returns {sum, carry}
 	vector< pair<vector<float>, vector<float>> > training_data =
@@ -33,6 +31,11 @@ int main() {
 		{ { 1, 0 }, {1, 0} },
 		{ { 1, 1 }, {0, 1} },
 	};
+
+	int nr_inputs  = training_data[0].first.size();
+	int nr_outputs = training_data[0].second.size();
+
+	Network net({ nr_inputs, 3, nr_outputs });	// 1 hidden layer with 3 neurons
 
 	int nrOfIter = 10000;	// number of iterations
 	for (int i = 0; i < nrOfIter; i++)
