@@ -21,10 +21,10 @@ void printSol(vector<float> net_in, vector<float> net_out, vector<float> out) {
 }
 
 int main() {
-	Network net({ 2, 3, 4, 3, 2 });
+	Network net({ 2, 3, 2 });
 
 	// Training the net
-	// SUM - returns the sum and a carry
+	// SUM - returns {sum, carry}
 	vector< pair<vector<float>, vector<float>> > training_data =
 	{
 	//	{ {input}, {supposed output} }

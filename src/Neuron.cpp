@@ -1,7 +1,6 @@
 #include "Neuron.h"
 #include <cmath> // in sigmoid function: used exp(x) <=> e^x
 #include <cassert>	// in dot function: used assert()
-#include <time.h>
 
 const float Neuron::eta   = 0.2f;	// learning rate
 const float Neuron::alpha = 0.6f;	// momentum constant
@@ -12,10 +11,7 @@ Neuron::Neuron()
 
 Neuron::Neuron(int nr_inputs)
 {
-	srand((unsigned int)time(NULL));
-	//srand(42);
-
-	// initializing bias and weights randomly
+	// initializing bias and weights randomly between (-1.5 , 1.5)
 	bias = rand() / (float)RAND_MAX * 3.0f - 1.5f;
 
 	weights.resize(nr_inputs);
@@ -40,12 +36,12 @@ float Neuron::feedFoward(vector<float>& ins)
 
 void Neuron::calcOutGradient(float target)
 {
-	my_gradient = (target - my_out) * sigmoid_deriv(my_out);
+	my_gradient = (target - my_out) * sigmoid_deriv(z);
 }
 
 void Neuron::calcHiddenGradient(const vector<Neuron*>& nextLayer, int my_index)
 {
-	my_gradient = sumDow(nextLayer, my_index) * sigmoid_deriv(my_out);
+	my_gradient = sumWGr(nextLayer, my_index) * sigmoid_deriv(z);
 }
 
 void Neuron::update(vector<Neuron*>& prevLayer)
@@ -109,11 +105,13 @@ float Neuron::sigmoid_deriv(float x)
 	// return 1 - x * x; // a good aprox for tanh'(x)
 }
 
-float Neuron::sumDow(const vector<Neuron*>& nextLayer, int my_index)
+// sum of w * gradient
+float Neuron::sumWGr(const vector<Neuron*>& nextLayer, int my_index)
 {
 	float sum = 0.0f;
 
 	for (Neuron* n : nextLayer) {
+		// n->w[my_index] - the weight from "this" Neuron to "n" Neuron
 		sum += n->getWeights()[my_index] * n->getGradient();
 	}
 

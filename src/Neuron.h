@@ -9,9 +9,9 @@ public:
 	Neuron();
 	Neuron(int);
 	~Neuron();
-	float feedFoward(vector<float>&);
-	void calcOutGradient(float);
-	void calcHiddenGradient(const vector<Neuron*>&, int);
+	float feedFoward(vector<float>& ins);	// sets my_out using the input activations
+	void calcOutGradient(float);	// Setting Output Layer Gradient
+	void calcHiddenGradient(const vector<Neuron*>&, int);	// Setting Output Layer Gradient
 	void update(vector<Neuron*>&);
 
 	float getActivation() const;
@@ -25,7 +25,7 @@ private:
 	vector<float> weights;
 	vector<float> deltaWeights;
 
-	float my_out;		// activation output or sigmoid(z)
+	float my_out;		// activation output = sigmoid(z)
 	float z;			// 
 	float my_gradient;	// error gradient
 
@@ -39,5 +39,5 @@ private:
 	static float dot(const vector<float>& v1, const vector<float>& v2);	// dot product
 	static float sigmoid(float x);
 	static float sigmoid_deriv(float x);
-	static float sumDow(const vector<Neuron*>& nextLayer, int my_index);
+	static float sumWGr(const vector<Neuron*>& nextLayer, int my_index);
 };

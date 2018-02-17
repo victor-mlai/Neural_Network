@@ -1,4 +1,5 @@
 #include "Network.h"
+#include <time.h>
 
 Network::Network()
 {
@@ -15,6 +16,8 @@ The biases and weights in the Network object are all initialized randomly
 */
 Network::Network(const vector<int>& topo) : topo(topo)
 {
+	srand(42);
+
 	layers.resize(topo.size());
 	for (int i = 1; i < topo.size(); i++) {
 		layers[i].resize(topo[i]);
@@ -41,9 +44,10 @@ Network::~Network()
 
 void Network::train(vector<float> in, vector<float> out)
 {
-	vector<float> my_outs(getResults(in));
+	// vector<float> my_outs(getResults(in));
+	// float Cost = RMS(my_outs, out);	// useless
 
-	float Cost = RMS(my_outs, out);
+	getResults(in);	// setting output activations
 
 	// Calculate Gradients and update Weights and Biases
 	{
@@ -76,20 +80,23 @@ vector<float> Network::getResults(vector<float> in)
 {
 	vector<float> out(in);
 
-	printf("Input activations:\n");
+	//printf("\n");
 	Layer& inputLayer = layers[0];
 	for (int j = 0; j < topo[0]; j++) {
 		inputLayer[j]->setActivation(in[j]);
-		printf("%1.2f", inputLayer[j]->getActivation());
+		//printf("%2.2f ", inputLayer[j]->getActivation());
 	}
-
+	//printf("\n--------------------------------------------\n");
 	for (int i = 1; i < topo.size(); i++) {	// for each Layer (except input layer)
+		//printf("Output activations: %d\n", i);
 		in = out;	// the input of this layer will be the output of the previous layer
 		out.resize(topo[i]);
 		int j = 0;
 		for (Neuron* n : layers[i]) {	// for each Neuron in the current layer
 			out[j++] = n->feedFoward(in);
+			//printf("%2.2f ", out[j-1]);
 		}
+		//printf("\n--------------------------------------------\n");
 	}
 
 	return out;
