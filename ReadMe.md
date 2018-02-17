@@ -2,22 +2,22 @@
 Learns using the input from the testing_data how to compute the output
 
 ## Using the program
-```
 in the main()
 * write a series of inputs and their corresponding output (as an example check the sum of 2 bits)
 * create the Network ( using a topology vector{each number represents the number of Neurons in each Layer} ) 
 * and the number of iterations should be pretty high so set it right.
-```
 
 ## Neural Network Algorithm
-```
 * is composed from multiple Layers: an Input Layer, 0 or more Hidden Layers and an Output Layer
 * each Layer has a vector of Neurons
+
 ![](https://github.com/victorlaurentiu/Neural_Network/blob/master/NeuralNetwork.PNG)
+
 * each Neuron has a vector of input weights and a bias value ( exception: the Input Layer )
+
 ![](https://github.com/victorlaurentiu/Neural_Network/blob/master/Neuron.PNG)
 
-
+```
 l - layer index
 L - index of the output layer
 n - neuron index
@@ -76,10 +76,10 @@ b += deltaB
 ```
 
 ## References:
-```
 the book I used:
-	[Neural Networks and Deep Learning](http://neuralnetworksanddeeplearning.com/index.html)
-	[Improving the way neural networks learn](http://neuralnetworksanddeeplearning.com/chap3.html)
+
+[Neural Networks and Deep Learning](http://neuralnetworksanddeeplearning.com/index.html)
+
 an youtube video of implementing this in C++ ... uses a little different approach than mine
-	[Neural Net in C++ Tutorial](https://www.youtube.com/watch?v=KkwX7FkLfug)
-```
+
+[Neural Net in C++ Tutorial](https://www.youtube.com/watch?v=KkwX7FkLfug)
