@@ -9,14 +9,19 @@ Neuron::Neuron()
 {
 }
 
+// return a random value between (min, max)
+float getRand(float min, float max) {
+	return (rand() / (float)RAND_MAX) * (max - min) + min;
+}
+
 Neuron::Neuron(int nr_inputs)
 {
-	// initializing bias and weights randomly between (-1.5 , 1.5)
-	bias = rand() / (float)RAND_MAX * 3.0f - 1.5f;
+	// initializing bias and weights randomly
+	bias = getRand(-2, 2);
 
 	weights.resize(nr_inputs);
 	for (int i = 0; i < nr_inputs; i++) {
-		weights[i] = rand() / (float)RAND_MAX * 3.0f - 1.5f;
+		weights[i] = getRand(-2, 2);
 	}
 
 	deltaBias = 0.0f;
@@ -110,8 +115,9 @@ float Neuron::sumWGr(const vector<Neuron*>& nextLayer, int my_index)
 {
 	float sum = 0.0f;
 
+	// for each out connection calculate w * gradient and add it tot the sum
 	for (Neuron* n : nextLayer) {
-		// n->w[my_index] - the weight from "this" Neuron to "n" Neuron
+		// n->getWeights()[my_index] - the weight from "this" Neuron to "n" Neuron
 		sum += n->getWeights()[my_index] * n->getGradient();
 	}
 

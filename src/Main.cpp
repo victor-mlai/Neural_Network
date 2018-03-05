@@ -7,17 +7,17 @@ using namespace std;
 void printSol(vector<float> net_in, vector<float> net_out, vector<float> out) {
 	printf("in: ");
 	for (float f : net_in) {
-		printf("%f ", f);
+		printf("%.3f ", f);
 	}
-	printf("   |   net_out: ");
-	for (float f : net_out) {
-		printf("%f ", f);
-	}
-	printf("   |   out: ");
+	printf(" | out: ");
 	for (float f : out) {
-		printf("%f ", f);
+		printf("%.3f ", f);
 	}
-	printf("\n------------\n");
+	printf(" | net_out: ");
+	for (float f : net_out) {
+		printf("%.3f ", f);
+	}
+	printf("\n-------------------\n");
 }
 
 int main() {
@@ -37,7 +37,7 @@ int main() {
 
 	Network net({ nr_inputs, 3, nr_outputs });	// 1 hidden layer with 3 neurons
 
-	int nrOfIter = 10000;	// number of iterations
+	int nrOfIter = 2000;	// number of iterations
 	for (int i = 0; i < nrOfIter; i++)
 	{
 		for (auto t_data : training_data) {

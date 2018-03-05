@@ -81,9 +81,11 @@ vector<float> Network::getResults(vector<float> in)
 	vector<float> out(in);
 
 	Layer& inputLayer = layers[0];
-	for (int j = 0; j < topo[0]; j++) {
-		inputLayer[j]->setActivation(in[j]);
+	int j = 0;
+	for (Neuron* n : inputLayer) {
+		n->setActivation(in[j++]);
 	}
+
 	for (int i = 1; i < topo.size(); i++) {	// for each Layer (except input layer)
 		in = out;	// the input of this layer will be the output of the previous layer
 		out.resize(topo[i]);
