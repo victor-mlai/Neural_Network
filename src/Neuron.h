@@ -8,10 +8,10 @@ public:
 	Neuron();
 	Neuron(int);
 	~Neuron();
-	float feedFoward(vector<float>& ins);	// sets my_out using the input activations
+	float feedFoward(const vector<float>& ins);	// sets my_out using the input activations
 	void calcOutGradient(float);	// Setting Output Layer Gradient
 	void calcHiddenGradient(const vector<Neuron*>&, int);	// Setting Output Layer Gradient
-	void update(vector<Neuron*>&);
+	void update(const vector<Neuron*>&);
 
 	float getActivation() const;
 	void setActivation(float);
@@ -28,8 +28,8 @@ private:
 	float z;			// input for sigmoid(z)
 	float my_gradient;	// error gradient
 
-	static const float eta;		// learning rate
-	static const float alpha;	// momentum constant
+	//static const float eta;		// learning rate
+	//static const float alpha;	// momentum constant
 
 	#define ETA 0.2f	// learning rate
 	#define ALPHA 0.6f // momentum constant

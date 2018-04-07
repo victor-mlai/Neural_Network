@@ -2,8 +2,8 @@
 #include <cmath> // in sigmoid function: used exp(x) <=> e^x
 #include <cassert>	// in dot function: used assert()
 
-const float Neuron::eta   = 0.2f;	// learning rate
-const float Neuron::alpha = 0.6f;	// momentum constant
+//const float Neuron::eta   = 0.2f;	// learning rate
+//const float Neuron::alpha = 0.6f;	// momentum constant
 
 Neuron::Neuron()
 {
@@ -32,7 +32,7 @@ Neuron::~Neuron()
 {
 }
 
-float Neuron::feedFoward(vector<float>& ins)
+float Neuron::feedFoward(const vector<float>& ins)
 {
 	z = dot(ins, weights) + bias;
 	my_out = sigmoid(z);	// save value for back propagation
@@ -49,7 +49,7 @@ void Neuron::calcHiddenGradient(const vector<Neuron*>& nextLayer, int my_index)
 	my_gradient = sumWGr(nextLayer, my_index) * sigmoid_deriv(z);
 }
 
-void Neuron::update(vector<Neuron*>& prevLayer)
+void Neuron::update(const vector<Neuron*>& prevLayer)
 {
 	for (int i = 0; i < weights.size(); i++) {
 		deltaWeights[i] = ALPHA * deltaWeights[i] + ETA * prevLayer[i]->my_out * my_gradient;
@@ -111,7 +111,7 @@ float Neuron::sigmoid_deriv(float x)
 }
 
 // sum of w * gradient
-float Neuron::sumWGr(const vector<Neuron*>& nextLayer, int my_index)
+float Neuron::sumWGr(const vector<Neuron*> &nextLayer, int my_index)
 {
 	float sum = 0.0f;
 
