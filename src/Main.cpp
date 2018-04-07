@@ -23,7 +23,7 @@ void printSol(const vector<float> &net_in, const vector<float> &net_out, const v
 
 int main() {
 	// Training the net
-	// 3 bits numarator
+	// 3 bit counter
 	vector< pair<vector<float>, vector<float>> > training_data =
 	{
 	//	{ {input}, {supposed output} }
