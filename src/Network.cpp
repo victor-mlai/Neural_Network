@@ -1,121 +1,180 @@
-#include "Network.h"
-#include <time.h>
+#include "Network.hpp"
+#include <random>
+#include <cmath> // for exp
+#include <cassert>	// for assert
+#include <numeric>
+#include <ranges>
+#include <functional>
 
-Network::Network()
+constexpr float ETA = 0.1f;  	// learning rate
+constexpr float ALPHA = 0.9f;  	// momentum constant
+
+namespace
 {
+	float dot(const std::vector<float>& v1, const std::vector<float>& v2)
+	{
+		assert(v1.size() == v2.size());
+
+		return std::inner_product(v1.begin(), v1.end(), v2.begin(), 0.f);
+	}
+
+	// dot product between the weights of the connections that go in the Neuron
+	// from index "idx" in nextLayer with the Neurons' gradients
+	float DotProdBetw_Weigths_And_Gradients(const Layer& nextLayer, const size_t idx)
+	{
+		float sum = 0.f;
+		for (unsigned i = 0; i < nextLayer.m_nrOfNeurons; ++i)
+		{
+			sum += nextLayer.m_weights[i][idx] * nextLayer.m_gradients[i];
+		}
+
+		return sum;
+	}
+
+	// ---------------------------------------------------
+	// Sigmoid methods
+
+	float Sigmoid(float x)
+	{
+		return 1 / (1 + exp(-x)); // returns a value between (0, 1)
+		// return tanh(x); // returns a value between (-1, 1)
+	}
+	
+	float SigmoidDeriv(float x)
+	{
+		return Sigmoid(x) * (1 - Sigmoid(x));
+		// return 1 - x * x; // a good aprox for tanh'(x)
+	}
+
+	float ReLu(float x)
+	{
+		return x > 0.f ? x : 0.f;
+	}
+	
+	float ReLuDeriv(float x)
+	{
+		return x > 0.f ? 1.f : 0.f;
+	}
 }
 
-/*
-The list topo contains the number of neurons in the respective layers
-	topo[0] = number of neurons in the input layer
-	topo[1] = number of neurons in the 1st hidden layer
-	...
-	topo[len-1] = number of neurons in the output layer
+// ---------------------------------------------------
+// Layer
 
-The biases and weights in the Network object are all initialized randomly
-*/
-Network::Network(const vector<int>& topo) : topo(topo)
+Layer::Layer(const unsigned numNeurons, const unsigned numInputs) noexcept
+	: m_nrOfNeurons(numNeurons),
+	m_weights(numNeurons, std::vector<float>(numInputs)),
+	m_dweights(numNeurons, std::vector<float>(numInputs)),
+	m_biases(numNeurons),
+	m_dbiases(numNeurons),
+	m_activs(numNeurons),
+	m_zs(numNeurons),
+	m_gradients(numNeurons)
+{
+	std::mt19937 rng;
+	std::uniform_real_distribution<float> distr(-1.f, 1.f);
+
+	for (unsigned i = 0; i < m_nrOfNeurons; ++i)
+	{
+		std::generate_n(m_weights[i].begin(), numInputs, [&rng, &distr] { return distr(rng); });
+	}
+	std::generate_n(m_biases.begin(), numNeurons, [&rng, &distr] { return distr(rng); });
+}
+
+const std::vector<float>& Layer::FeedForward(const std::vector<float>& inputs)
+{
+	for (unsigned i = 0; i < m_nrOfNeurons; ++i)
+	{
+		m_zs[i] = dot(inputs, m_weights[i]) + m_biases[i];
+		m_activs[i] = Sigmoid(m_zs[i]);	// save value for back propagation
+	}
+
+	return m_activs;
+}
+
+void Layer::CalcOutGradient(const std::vector<float>& y_train)
+{
+	for (unsigned i = 0; i < m_nrOfNeurons; ++i)
+	{
+		m_gradients[i] = (y_train[i] - m_activs[i]) * SigmoidDeriv(m_zs[i]);
+	}
+}
+
+void Layer::CalcHiddenGradient(const Layer& nextLayer)
+{
+	for (unsigned i = 0; i < m_nrOfNeurons; ++i)
+	{
+		m_gradients[i] = DotProdBetw_Weigths_And_Gradients(nextLayer, i) * SigmoidDeriv(m_zs[i]);
+	}
+}
+
+void Layer::update(const std::vector<float>& prevLayerActivations)
+{
+	for (unsigned i = 0; i < m_nrOfNeurons; ++i)
+	{
+		const size_t nrOfWeights = m_weights[i].size();
+		for (size_t j = 0; j < nrOfWeights; ++j)
+		{
+			m_dweights[i][j] = ALPHA * m_dweights[i][j] + ETA * prevLayerActivations[j] * m_gradients[i];
+			m_weights[i][j] += m_dweights[i][j];
+		}
+
+		m_dbiases[i] = ALPHA * m_dbiases[i] + ETA * m_gradients[i];
+		m_biases[i] += m_dbiases[i];
+	}
+}
+
+// ---------------------------------------------------
+// Network
+
+Network::Network(const std::vector<size_t>& layersSizes)
 {
 	srand(42);
 
-	layers.reserve(topo.size());
-	
-	// add input layer
-	layers.push_back(Layer());
-	Layer& inputLayer = layers.back();
-	inputLayer.reserve(topo[0]);
-	for (int j = 0; j < topo[0]; j++) {
-		inputLayer.push_back(new Neuron());
-	}
+	// make space for all layers except input layer
+	m_layers.reserve(layersSizes.size()-1);
 
-	for (unsigned i = 1; i < topo.size(); i++) {
-		layers.push_back(Layer());
-		layers.back().reserve(topo[i]);
-		for (int j = 0; j < topo[i]; j++) {
-			layers[i].push_back(new Neuron(topo[i - 1]));
-		}
-	}
-
-}
-
-Network::~Network()
-{
-	for (unsigned i = 1; i < topo.size(); i++) {
-		for (int j = 0; j < topo[i]; j++) {
-			delete layers[i][j];
-		}
+	// add hidden layers + out layer
+	for (unsigned i = 1; i < layersSizes.size(); ++i)
+	{
+		m_layers.emplace_back(/*nrOfNeurons: */ layersSizes[i], /*nrOfInput Connections: */ layersSizes[i-1]);
 	}
 }
 
-void Network::train(const vector<float> &in, const vector<float> &out)
+void Network::train(const std::vector<float>* x_train, const std::vector<float>& y_train)
 {
-	// vector<float> my_outs(getResults(in));
-	// float Cost = RMS(my_outs, out);
-
-	// setting output activations for input layer
-	int j = 0;
-	for (Neuron* n : layers[0]) {
-		n->setActivation(in[j++]);
+	// Feed forward
+	for (Layer& currLayer : m_layers)
+	{
+		x_train = &(currLayer.FeedForward(*x_train));
 	}
-
-	getResults(in);	// setting output activations
 
 	// Calculate Gradients
 	{
-		Layer& outLayer = layers.back();
-		int j = 0;
-		for (Neuron* n : outLayer) {
-			n->calcOutGradient(out[j++]);
-		}
+		m_layers.back().CalcOutGradient(y_train);
 
-		for (int i = layers.size() - 2; i > 0; i--) {
-			Layer& currLayer = layers[i];
-			Layer& nextLayer = layers[i + 1];
-			int n_index = 0;	// neuron's index
-			for (Neuron* n : currLayer) {
-				n->calcHiddenGradient(nextLayer, n_index++);
-			}
+		for (size_t j = m_layers.size() - 2; j > 0; j--)
+		{
+			Layer& currLayer = m_layers[j];
+			Layer& nextLayer = m_layers[j + 1];
+			currLayer.CalcHiddenGradient(nextLayer);
 		}
 	}
 
-	// Update Weights and Biases
+	// Update Weights and Biases based on Calculated Gradients
+	for (size_t i = m_layers.size() - 1; i > 1; i--)
 	{
-		for (int i = layers.size() - 1; i > 0; i--) {
-			Layer& currLayer = layers[i];
-			Layer& prevLayer = layers[i - 1];
-			for (Neuron* n : currLayer) {
-				n->update(prevLayer);
-			}
-		}
+		Layer& currLayer = m_layers[i];
+		Layer& prevLayer = m_layers[i - 1];
+		currLayer.update(prevLayer.m_activs);
 	}
 }
 
-vector<float> Network::getResults(vector<float> in)
+const std::vector<float>& Network::getResults(const std::vector<float>* in)
 {
-	vector<float> out;
-
-	in.swap(out);	// swapping so the next swap will revert it
-	for (unsigned i = 1; i < topo.size(); i++) {	// for each Layer (except input layer)
-		in.swap(out);	// the input of this layer will be the output of the previous layer
-		out.resize(topo[i]);
-		int j = 0;
-		for (Neuron* n : layers[i]) {	// for each Neuron in the current layer
-			out[j++] = n->feedFoward(in);
-		}
+	for (Layer& currLayer : m_layers)
+	{
+		in = &(currLayer.FeedForward(*in));
 	}
 
-	return out;
-}
-
-// Root Mean Square error
-float Network::RMS(const vector<float> &target, const vector<float> &actual) {
-	float rms = 0.0f;
-
-	int n = target.size();
-	for (int i = 0; i < n; i++) {
-		float delta = target[i] - actual[i];
-		rms += delta * delta;
-	}
-
-	return sqrt(rms / n);
+	return *in;
 }

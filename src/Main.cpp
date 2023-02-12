@@ -1,65 +1,86 @@
 #include <iostream>
 #include <vector>
-#include "Network.h"
 #include <chrono>	// for measuring the training time
+#include <fstream>
+#include <string>
+#include <iosfwd>
+#include <sstream>
+#include <cassert>
+#include <ranges>
 
-using namespace std;
+#include "Network.hpp"
+#include "Utils.hpp"
 
-void printSol(const vector<float> &net_in, const vector<float> &net_out, const vector<float> &out) {
-	printf("in: ");
-	for (float f : net_in) {
-		printf("%.3f ", f);
-	}
-	printf(" | out: ");
-	for (float f : out) {
-		printf("%.3f ", f);
-	}
-	printf(" | net_out: ");
-	for (float f : net_out) {
-		printf("%.3f ", f);
-	}
-	printf("\n-------------------\n");
-}
+#define COUNTER 0
+#define IRIS 1
+#define HAND_WRITTEN 2
 
-int main() {
-	// Training the net
-	// 3 bit counter
-	vector< pair<vector<float>, vector<float>> > training_data =
-	{
-	//	{ {input}, {supposed output} }
-		{ { 0, 0, 0 },{ 0, 0, 1 } },
-		{ { 0, 0, 1 },{ 0, 1, 0 } },
-		{ { 0, 1, 0 },{ 0, 1, 1 } },
-		{ { 0, 1, 1 },{ 1, 0, 0 } },
-		{ { 1, 0, 0 },{ 1, 0, 1 } },
-		{ { 1, 0, 1 },{ 1, 1, 0 } },
-		{ { 1, 1, 0 },{ 1, 1, 1 } },
-		{ { 1, 1, 1 },{ 0, 0, 0 } }
-	};
+#define WHAT_TO_TRAIN HAND_WRITTEN
 
-	int nr_inputs  = training_data[0].first.size();
-	int nr_outputs = training_data[0].second.size();
+#if WHAT_TO_TRAIN == COUNTER
+constexpr int EPOCHS = 1000;
+constexpr int TESTING_INTERVAL = 10;
+#elif WHAT_TO_TRAIN == IRIS
+constexpr int EPOCHS = 1000;
+constexpr int TESTING_INTERVAL = 10;
+#elif WHAT_TO_TRAIN == HAND_WRITTEN
+constexpr int EPOCHS = 10;
+constexpr int TESTING_INTERVAL = 1;
+#endif
 
-	Network net({ nr_inputs, 8, 8, nr_outputs });	// 2 hidden layer with 8 neurons each
+int main()
+{
+	const auto [x_train, y_train] =
+#if WHAT_TO_TRAIN == COUNTER
+		Utils::LoadBitCounterData();
+#elif WHAT_TO_TRAIN == IRIS
+		Utils::LoadIrisData();
+#elif WHAT_TO_TRAIN == HAND_WRITTEN
+		Utils::LoadHandWrittenData();
+#endif
+	assert(x_train.size() == y_train.size());
 
-	int nrOfIter = 1000;	// number of iterations
-	
+	const size_t nrInputs = x_train[0].size();
+	const size_t nrOutputs = y_train[0].size();
+
+	Network net({
+		nrInputs,
+#if WHAT_TO_TRAIN == COUNTER
+		18, 30, 18,
+#elif WHAT_TO_TRAIN == IRIS
+		18, 30, 18,
+#elif WHAT_TO_TRAIN == HAND_WRITTEN
+		500, 50,
+#endif
+		nrOutputs });
+
+	//-------------------------------------------
 	auto start = std::chrono::steady_clock::now();
-	for (int i = 0; i < nrOfIter; i++) {
-		for (auto t_data : training_data) {
-			net.train(t_data.first, t_data.second);
+
+	for (unsigned i = 1; i < EPOCHS+1; i++)
+	{
+		for (unsigned j = 0; j < x_train.size(); j++)
+			net.train(&x_train[j], y_train[j]);
+
+		if (i % TESTING_INTERVAL == 0)
+		{
+			std::cout << "\n-------------------\n";
+			const auto [mseLoss, acc] = Utils::CalcMSELossAndAccuracy(x_train, y_train, net);
+			std::cout << "Epoch: " << i << " - Loss: " << mseLoss << " - Acc: " << acc << std::endl;
 		}
 	}
+
 	auto end = std::chrono::steady_clock::now();
+	//-------------------------------------------
 
 	std::cout << "Training Time: " 
 		<< std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000000.0
 		<< "\n";
 
-	// Testing
-	for (auto t_data : training_data) {
-		printSol(t_data.first, net.getResults(t_data.first), t_data.second);
-	}
+	// Visualize
+#if WHAT_TO_TRAIN != HAND_WRITTEN
+	Utils::PrintSolutionForXOR(x_train, y_train, net);
+#endif
 
 	system("pause");
 	return 0;
