@@ -1,0 +1,29 @@
+name: clang-tidy-review
+
+# currently only works on pull requests
+on:
+  pull_request:
+    paths:
+      - '**.cpp'
+      - '**.hpp'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Run clang-tidy
+      uses: ZedThree/clang-tidy-review@v0.13
+      id: review
+      with:
+        # Packages to install
+        apt_packages: liblapack-dev
+        # CMake command to run in order to generate compile_commands.json
+        cmake_command: cmake . -DCMAKE_EXPORT_COMPILE_COMMANDS=on
+        # List of checks
+        clang_tidy_checks: '-*,performance-*,readability-*,bugprone-*,clang-analyzer-*,cppcoreguidelines-*,mpi-*,misc-*'
+
+    - name: Upload results
+      uses: ZedThree/clang-tidy-review/upload@v0.13

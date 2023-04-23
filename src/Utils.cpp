@@ -199,9 +199,9 @@ auto CalcMSELossAndAccuracy(
 			const float delta = target[j] - net_output[j];
 			mseLoss += delta * delta;
 		}
-		
+
 		// count element-wise values in target and net_output are close
-		correctCount += std::inner_product(target.begin(), target.end(), net_output.begin(), 0, std::plus<size_t>{}, 
+		correctCount += std::inner_product(target.begin(), target.end(), net_output.begin(), 0, std::plus<size_t>{},
 			[](float t, float o) -> size_t { return (t > 0.5f && o > 0.5f) || (t < 0.5f && o < 0.5f); });
 	}
 

@@ -142,11 +142,11 @@ Training Time: 31.3381
 * is composed from multiple Layers: an Input Layer, 0 or more Hidden Layers and an Output Layer
 * each Layer has a vector of Neurons
 
-![](https://github.com/victorlaurentiu/Neural_Network/blob/master/NeuralNetwork.PNG)
+![](https://github.com/victorlaurentiu/Neural_Network/blob/master/Resources/NeuralNetwork.PNG)
 
 * each Neuron has a vector of input weights and a bias value ( exception: the Input Layer )
 
-![](https://github.com/victorlaurentiu/Neural_Network/blob/master/Neuron.PNG)
+![](https://github.com/victorlaurentiu/Neural_Network/blob/master/Resources/Neuron.PNG)
 
 ```
 l - layer index
@@ -203,7 +203,7 @@ b += deltaB
 * Optimize the algorithm even more ([Cross-Entropy](http://neuralnetworksanddeeplearning.com/chap3.html#the_cross-entropy_cost_function) and [Regularization](http://neuralnetworksanddeeplearning.com/chap3.html#regularization))
 
 	[Improving the way neural networks learn](http://neuralnetworksanddeeplearning.com/chap3.html)
-* Combine with the Genetic Algorithm to create a self driving car??? .. idk
+* Combine with the Genetic Algorithm to create a self driving car? .. idk
 * Recognize images with cucumbers
 
 

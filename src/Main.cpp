@@ -57,7 +57,7 @@ int main()
 	//-------------------------------------------
 	auto start = std::chrono::steady_clock::now();
 
-	for (unsigned i = 1; i < EPOCHS+1; i++)
+	for (unsigned i = 1; i < EPOCHS + 1; i++)
 	{
 		for (unsigned j = 0; j < x_train.size(); j++)
 			net.train(&x_train[j], y_train[j]);
@@ -73,7 +73,7 @@ int main()
 	auto end = std::chrono::steady_clock::now();
 	//-------------------------------------------
 
-	std::cout << "Training Time: " 
+	std::cout << "Training Time: "
 		<< std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000000.0
 		<< "\n";
 

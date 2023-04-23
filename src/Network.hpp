@@ -31,7 +31,7 @@ public:
 
 	// Trains the network using the input vector and the output vector
 	void train(const std::vector<float>* x_train, const std::vector<float>& y_train);
-	
+
 	// Trains the network using 
 	//void StochasticGradientDecent(TrainingDataType& in, const int nrOfIter, const int batchSize);
 

@@ -11,50 +11,50 @@ constexpr float ALPHA = 0.9f;  	// momentum constant
 
 namespace
 {
-	float dot(const std::vector<float>& v1, const std::vector<float>& v2)
-	{
-		assert(v1.size() == v2.size());
+float dot(const std::vector<float>& v1, const std::vector<float>& v2)
+{
+	assert(v1.size() == v2.size());
 
-		return std::inner_product(v1.begin(), v1.end(), v2.begin(), 0.f);
+	return std::inner_product(v1.begin(), v1.end(), v2.begin(), 0.f);
+}
+
+// dot product between the weights of the connections that go in the Neuron
+// from index "idx" in nextLayer with the Neurons' gradients
+float DotProdBetw_Weigths_And_Gradients(const Layer& nextLayer, const size_t idx)
+{
+	float sum = 0.f;
+	for (unsigned i = 0; i < nextLayer.m_nrOfNeurons; ++i)
+	{
+		sum += nextLayer.m_weights[i][idx] * nextLayer.m_gradients[i];
 	}
 
-	// dot product between the weights of the connections that go in the Neuron
-	// from index "idx" in nextLayer with the Neurons' gradients
-	float DotProdBetw_Weigths_And_Gradients(const Layer& nextLayer, const size_t idx)
-	{
-		float sum = 0.f;
-		for (unsigned i = 0; i < nextLayer.m_nrOfNeurons; ++i)
-		{
-			sum += nextLayer.m_weights[i][idx] * nextLayer.m_gradients[i];
-		}
+	return sum;
+}
 
-		return sum;
-	}
+// ---------------------------------------------------
+// Sigmoid methods
 
-	// ---------------------------------------------------
-	// Sigmoid methods
+float Sigmoid(float x)
+{
+	return 1 / (1 + exp(-x)); // returns a value between (0, 1)
+	// return tanh(x); // returns a value between (-1, 1)
+}
 
-	float Sigmoid(float x)
-	{
-		return 1 / (1 + exp(-x)); // returns a value between (0, 1)
-		// return tanh(x); // returns a value between (-1, 1)
-	}
-	
-	float SigmoidDeriv(float x)
-	{
-		return Sigmoid(x) * (1 - Sigmoid(x));
-		// return 1 - x * x; // a good aprox for tanh'(x)
-	}
+float SigmoidDeriv(float x)
+{
+	return Sigmoid(x) * (1 - Sigmoid(x));
+	// return 1 - x * x; // a good aprox for tanh'(x)
+}
 
-	float ReLu(float x)
-	{
-		return x > 0.f ? x : 0.f;
-	}
-	
-	float ReLuDeriv(float x)
-	{
-		return x > 0.f ? 1.f : 0.f;
-	}
+float ReLu(float x)
+{
+	return x > 0.f ? x : 0.f;
+}
+
+float ReLuDeriv(float x)
+{
+	return x > 0.f ? 1.f : 0.f;
+}
 }
 
 // ---------------------------------------------------
@@ -131,12 +131,14 @@ Network::Network(const std::vector<size_t>& layersSizes)
 	srand(42);
 
 	// make space for all layers except input layer
-	m_layers.reserve(layersSizes.size()-1);
+	m_layers.reserve(layersSizes.size() - 1);
 
 	// add hidden layers + out layer
 	for (unsigned i = 1; i < layersSizes.size(); ++i)
 	{
-		m_layers.emplace_back(/*nrOfNeurons: */ layersSizes[i], /*nrOfInput Connections: */ layersSizes[i-1]);
+		m_layers.emplace_back(
+			/*nrOfNeurons: */ layersSizes[i],
+			/*nrOfInput Connections: */ layersSizes[i - 1]);
 	}
 }
 
@@ -155,7 +157,7 @@ void Network::train(const std::vector<float>* x_train, const std::vector<float>&
 		for (size_t j = m_layers.size() - 2; j > 0; j--)
 		{
 			Layer& currLayer = m_layers[j];
-			Layer& nextLayer = m_layers[j + 1];
+			const Layer& nextLayer = m_layers[j + 1];
 			currLayer.CalcHiddenGradient(nextLayer);
 		}
 	}
@@ -164,7 +166,7 @@ void Network::train(const std::vector<float>* x_train, const std::vector<float>&
 	for (size_t i = m_layers.size() - 1; i > 1; i--)
 	{
 		Layer& currLayer = m_layers[i];
-		Layer& prevLayer = m_layers[i - 1];
+		const Layer& prevLayer = m_layers[i - 1];
 		currLayer.update(prevLayer.m_activs);
 	}
 }
