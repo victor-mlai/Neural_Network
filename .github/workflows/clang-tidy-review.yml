@@ -2,10 +2,11 @@ name: clang-tidy-review
 
 # currently only works on pull requests
 on:
-  push:
+  pull_request:
     paths:
       - '**.cpp'
       - '**.hpp'
+      - '**.yml'
 
 jobs:
   build:
