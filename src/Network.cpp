@@ -31,7 +31,7 @@ float DotProdBetw_Weigths_And_Gradients(const Layer& nextLayer, const size_t idx
 	return sum;
 }
 
-// ----------------------------------------------------
+// -----------------------------------------------------
 // Sigmoid methods
 
 float Sigmoid(float x)
