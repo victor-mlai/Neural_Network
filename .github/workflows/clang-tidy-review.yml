@@ -15,7 +15,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Run clang-tidy
-      uses: ZedThree/clang-tidy-review@v0.13
+      uses: ZedThree/clang-tidy-review@v0.12.2
       id: review
       with:
         # Packages to install
@@ -26,4 +26,4 @@ jobs:
         clang_tidy_checks: '-*,performance-*,readability-*,bugprone-*,clang-analyzer-*,cppcoreguidelines-*,mpi-*,misc-*'
 
     - name: Upload results
-      uses: ZedThree/clang-tidy-review/upload@v0.13
+      uses: ZedThree/clang-tidy-review/upload@v0.12.2
